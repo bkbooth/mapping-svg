@@ -77,7 +77,7 @@ function loadVehicle(map) {
         status = statuses[Math.floor(Math.random() * statuses.length)];
 
     return new SVGOverlay({
-        image: '/img/tack-car-top-view.svg',
+        image: '/img/simple-truck.svg',
         position: latLng,
         heading: direction,
         size: imageSize,
