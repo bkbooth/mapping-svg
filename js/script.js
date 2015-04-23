@@ -123,15 +123,22 @@ function randomPointFromCircle(circle) {
 }
 
 // requestAnimationFrame() too slow, use setTimeout with configurable interval
+var time = null,
+    refresher = null;
 function update() {
-    setTimeout(update, refreshInterval);
+    refresher = setTimeout(update, refreshInterval);
+
+    // Calculate delta time
+    var now = Number(new Date()),
+        dt = now - (time || now);
+    time = now;
 
     for (var i = 0; i < vehicleMarkers.length; i++) {
         if (vehicleMarkers[i] && vehicleMarkers[i].isLoaded()) {
             // Move the vehicle
             vehicleMarkers[i].setPosition(google.maps.geometry.spherical.computeOffset(
                 vehicleMarkers[i].getPosition(),
-                vehicleSpeed * refreshInterval,
+                vehicleSpeed * dt,
                 vehicleMarkers[i].getHeading()
             ));
 
