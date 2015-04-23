@@ -4,6 +4,7 @@
  * @param {Object} options
  * @param {String}             options.image
  * @param {String}             options.colour
+ * @param {String}             options.label
  * @param {Number}             options.heading
  * @param {google.maps.LatLng} options.position
  * @param {google.maps.Size}   options.size
@@ -68,6 +69,42 @@ SVGOverlay.prototype.isLoaded = function() {
 };
 
 /**
+ * Add, update or remove the label overlay
+ *
+ * @param {String} label
+ */
+SVGOverlay.prototype.setLabel = function(label) {
+    var labelDiv = this._div.querySelector('.svg-label');
+    if (label) {
+        // Add or update label
+        this._label = label;
+        if (labelDiv) {
+            labelDiv.innerHTML = this._label;
+        } else {
+            var lbl = document.createElement('div');
+            lbl.innerHTML = this._label;
+            lbl.className = 'svg-label';
+            lbl.style.position = 'absolute';
+            lbl.style.left = '7px';
+            lbl.style.top = '0';
+            lbl.style.width = this._size.width + 'px';
+            lbl.style.height = this._size.height + 'px';
+            lbl.style.lineHeight = this._size.height + 'px';
+            lbl.style.fontFamily = 'Arial,sans-serif';
+            lbl.style.fontSize = (this._size.height * 0.4) + 'px';
+            lbl.style.color = ['white', 'yellow'].indexOf(this._colour) >= 0 ? 'black' : 'white';
+            this._div.appendChild(lbl);
+        }
+    } else {
+        // Remove label
+        if (labelDiv) {
+            labelDiv.parentNode.removeChild(labelDiv);
+            this._label = null;
+        }
+    }
+};
+
+/**
  * Set the colour of a specific path
  *
  * @param {(String|String[])} pathSpecs
@@ -108,21 +145,9 @@ SVGOverlay.prototype.onAdd = function() {
     obj.height = this._size.height;
     div.appendChild(obj);
 
-    var lbl = document.createElement('div');
-    lbl.innerHTML = this._label;
-    lbl.className = 'svg-label';
-    lbl.style.position = 'absolute';
-    lbl.style.left = '7px';
-    lbl.style.top = '0';
-    lbl.style.width = this._size.width + 'px';
-    lbl.style.height = this._size.height + 'px';
-    lbl.style.lineHeight = this._size.height + 'px';
-    lbl.style.fontFamily = 'Arial,sans-serif';
-    lbl.style.fontSize = (this._size.height * 0.4) + 'px';
-    lbl.style.color = ['white', 'yellow'].indexOf(this._colour) >= 0 ? 'black' : 'white';
-    div.appendChild(lbl);
-
     this._div = div;
+
+    this.setLabel(this._label);
 
     // Wait until object is loaded before setting colour
     google.maps.event.addDomListener(obj, 'load', function() {

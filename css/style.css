@@ -4,5 +4,23 @@ html, body, #map-canvas {
     padding: 0;
 }
 
-.svg-marker {
+.svg-options-control {
+    width: 200px;
+    padding: 5px 10px;
+    margin: 10px;
+
+    background: white;
+
+    border-radius: 5px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+.svg-options-control h1 {
+    font-size: 20px;
+    margin: 0 0 10px;
+}
+.svg-options-control .input-group {
+    margin: 0 0 5px;
+}
+.svg-options-control label {
+    display: block;
 }
