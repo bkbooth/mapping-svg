@@ -3,11 +3,12 @@ var mapObj = null,
     initZoom = 10,
     areaCentre = initCentre,
     areaRadius = 100000,
-    numVehicles = 500,
+    numVehicles = 100,
     centreMarker = null,
     radiusMarker = null,
     vehicleMarkers = [],
     vehicleSpeed = 0.5,
+    refreshInterval = 1000,
     statuses = ['red', 'yellow', 'orange', 'blue', 'green', 'white', 'black'],
     types = ['4M', '7T', 'LU', 'VE', 'AL', 'AV', 'V', 'T', 'L', 'GL', 'GT', 'GV', 'GC', 'GX', 'PC', 'PL', 'MI', 'CV'],
     imageSize = new google.maps.Size(48, 36) // 640x480 base image
@@ -41,11 +42,6 @@ function setCentreMarker(map) {
     function setAreaCentre(event) {
         areaCentre = event.latLng;
         radiusMarker.setCenter(event.latLng);
-
-        clearVehicles();
-        for (var i = 0; i < numVehicles; i++) {
-            vehicleMarkers[i] = loadVehicle(map);
-        }
     }
 
     // Update the centre and radius position during marker drag
@@ -126,23 +122,16 @@ function randomPointFromCircle(circle) {
     }
 }
 
-// Update loop using requestAnimationFrame and delta times for smooth animation
-var time;
+// requestAnimationFrame() too slow, use setTimeout with configurable interval
 function update() {
-    requestAnimationFrame(update);
-    //setTimeout(update, 500);
-
-    var now = new Date().getTime(),
-        dt = now - (time || now);
-
-    time = now;
+    setTimeout(update, refreshInterval);
 
     for (var i = 0; i < vehicleMarkers.length; i++) {
         if (vehicleMarkers[i] && vehicleMarkers[i].isLoaded()) {
             // Move the vehicle
             vehicleMarkers[i].setPosition(google.maps.geometry.spherical.computeOffset(
                 vehicleMarkers[i].getPosition(),
-                vehicleSpeed * dt,
+                vehicleSpeed * refreshInterval,
                 vehicleMarkers[i].getHeading()
             ));
 
