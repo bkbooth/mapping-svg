@@ -17,6 +17,7 @@ function SVGOverlay(options) {
     this._heading = options.heading;
     this._image = options.image;
     this._colour = options.colour;
+    this._label = options.label;
     this._size = options.size;
     this._anchor = options.anchor;
     this._map = options.map;
@@ -106,6 +107,20 @@ SVGOverlay.prototype.onAdd = function() {
     obj.width = this._size.width;
     obj.height = this._size.height;
     div.appendChild(obj);
+
+    var lbl = document.createElement('div');
+    lbl.innerHTML = this._label;
+    lbl.className = 'svg-label';
+    lbl.style.position = 'absolute';
+    lbl.style.left = '7px';
+    lbl.style.top = '0';
+    lbl.style.width = this._size.width + 'px';
+    lbl.style.height = this._size.height + 'px';
+    lbl.style.lineHeight = this._size.height + 'px';
+    lbl.style.fontFamily = 'Arial,sans-serif';
+    lbl.style.fontSize = (this._size.height * 0.4) + 'px';
+    lbl.style.color = ['white', 'yellow'].indexOf(this._colour) >= 0 ? 'black' : 'white';
+    div.appendChild(lbl);
 
     this._div = div;
 

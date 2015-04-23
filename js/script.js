@@ -9,6 +9,7 @@ var mapObj = null,
     vehicleMarkers = [],
     vehicleSpeed = 0.5,
     statuses = ['red', 'yellow', 'orange', 'blue', 'green', 'white', 'black'],
+    types = ['4M', '7T', 'LU', 'VE', 'AL', 'AV', 'V', 'T', 'L', 'GL', 'GT', 'GV', 'GC', 'GX', 'PC', 'PL', 'MI', 'CV'],
     imageSize = new google.maps.Size(48, 36) // 640x480 base image
 ;
 
@@ -74,7 +75,8 @@ function setRadiusMarker(map) {
 function loadVehicle(map) {
     var latLng = randomPointFromCircle(radiusMarker),
         direction = Math.random() * 360,
-        status = statuses[Math.floor(Math.random() * statuses.length)];
+        status = statuses[Math.floor(Math.random() * statuses.length)],
+        type = types[Math.floor(Math.random() * types.length)];
 
     return new SVGOverlay({
         image: '/img/simple-truck.svg',
@@ -82,6 +84,7 @@ function loadVehicle(map) {
         heading: direction,
         size: imageSize,
         colour: status,
+        label: type,
         anchor: new google.maps.Point(imageSize.width/2, imageSize.height/2),
         map: map
     });
