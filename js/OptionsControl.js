@@ -55,6 +55,11 @@ OptionsControl.prototype.init = function() {
                 '</select>' +
             '</div>' +
             '<div class="input-group">' +
+                '<label for="automatic-size">' +
+                    '<input type="checkbox" id="automatic-size" value="1"> Automatic Size' +
+                '</label>' +
+            '</div>' +
+            '<div class="input-group">' +
                 '<label for="show-labels">' +
                     '<input type="checkbox" id="show-labels" value="1" checked> Show Vehicle Labels' +
                 '</label>' +
@@ -94,6 +99,11 @@ OptionsControl.prototype.init = function() {
     Array.prototype.forEach.call(text.querySelectorAll('input, select'), function(control) {
         google.maps.event.addDomListener(control, 'change', this.callOnChange.bind(this));
     }.bind(this));
+
+    // Additional onChange listener to disable image size selection while automatic sizing is on
+    google.maps.event.addDomListener(text.querySelector('#automatic-size'), 'change', function() {
+        text.querySelector('#vehicle-image-size').disabled = this.checked;
+    });
 
     // Add the Reset button listener
     google.maps.event.addDomListener(text.querySelector('form'), 'reset', this.resetDefaults.bind(this));

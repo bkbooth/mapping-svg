@@ -9,11 +9,13 @@ var mapObj = null,
     vehicleMarkers = [],
     vehicleSpeed = 0.5,
     vehicleImage = 'simple-truck.svg',
+    vehicleImageSize = 48,
     showLabels = true,
     refreshInterval = 1000,
     statuses = ['red', 'yellow', 'orange', 'blue', 'green', 'white', 'black'],
     types = ['4M', '7T', 'LU', 'VE', 'AL', 'AV', 'V', 'T', 'L', 'GL', 'GT', 'GV', 'GC', 'GX', 'PC', 'PL', 'MI', 'CV'],
-    imageSize = new google.maps.Size(48, 36) // 640x480 base image
+    imageSize = new google.maps.Size(vehicleImageSize, vehicleImageSize * 0.75), // 640x480 base image
+    automaticSizing = false
 ;
 
 function init() {
@@ -21,6 +23,8 @@ function init() {
         center: initCentre,
         zoom: initZoom
     });
+
+    google.maps.event.addListener(mapObj, 'zoom_changed', zoomLevelChanged);
 
     addOptionsControl(mapObj);
     setCentreMarker(mapObj);
@@ -32,6 +36,17 @@ function init() {
 
     // Start the update loop
     update();
+}
+
+function zoomLevelChanged() {
+    console.log('zoomLevelChanged', mapObj.getZoom());
+    if (automaticSizing) {
+        var zoomSize = 4.8 * mapObj.getZoom();
+        imageSize = new google.maps.Size(zoomSize, zoomSize * 0.75);
+        for (i = 0; i < numVehicles; i++) {
+            vehicleMarkers[i].setSize(imageSize);
+        }
+    }
 }
 
 function addOptionsControl(map) {
@@ -75,10 +90,32 @@ function onOptionsChange(id, value) {
             }
             break;
         case 'vehicle-image-size':
-            if (value !== imageSize.width) {
-                imageSize = new google.maps.Size(value, value * 0.75);
+            if (value !== vehicleImageSize) {
+                vehicleImageSize = value;
+                imageSize = new google.maps.Size(vehicleImageSize, vehicleImageSize * 0.75);
                 for (i = 0; i < numVehicles; i++) {
                     vehicleMarkers[i].setSize(imageSize);
+                }
+            }
+            break;
+        case 'automatic-size':
+            if (value !== automaticSizing) {
+                automaticSizing = value;
+                var zoomSize, newImageSize;
+                if (automaticSizing) {
+                    // set size to current zoom level
+                    zoomSize = 4.8 * mapObj.getZoom();
+                    newImageSize = new google.maps.Size(zoomSize, zoomSize * 0.75);
+                } else {
+                    // set size to current size setting
+                    newImageSize = new google.maps.Size(vehicleImageSize, vehicleImageSize * 0.75);
+                }
+                if (newImageSize.width !== imageSize.width) {
+                    // update all vehicle sizes
+                    imageSize = newImageSize;
+                    for (i = 0; i < numVehicles; i++) {
+                        vehicleMarkers[i].setSize(imageSize);
+                    }
                 }
             }
             break;
