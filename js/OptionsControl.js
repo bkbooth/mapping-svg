@@ -153,14 +153,17 @@ OptionsControl.prototype.callOnChange = function(event) {
 };
 
 /**
- * Call onChange handler for each control
+ * Call onChange handler for each control and reset inputs
  */
 OptionsControl.prototype.resetDefaults = function() {
-    if (this._onChange) {
-        setTimeout(function() {
-            Array.prototype.forEach.call(this._div.querySelectorAll('input, select'), function(control) {
+    setTimeout(function() {
+        // reset vehicle image size select enabled
+        this._text.querySelector('#vehicle-image-size').disabled = this._text.querySelector('#automatic-size').checked;
+
+        if (this._onChange) {
+            Array.prototype.forEach.call(this._div.querySelectorAll('input, select'), function (control) {
                 this._onChange(control.id, this.getValue(control));
             }.bind(this));
-        }.bind(this), 0);
-    }
+        }
+    }.bind(this), 0);
 };

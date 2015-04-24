@@ -115,6 +115,8 @@ SVGOverlay.prototype.setLabel = function(label) {
  * @param {google.maps.Size} size
  */
 SVGOverlay.prototype.setSize = function(size) {
+    if (!this._div) { return; }
+
     if (size && size.width && size.height) {
         this._size = size;
 
