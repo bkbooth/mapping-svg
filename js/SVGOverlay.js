@@ -93,6 +93,11 @@ SVGOverlay.prototype.setLabel = function(label) {
             lbl.style.fontFamily = 'Arial,sans-serif';
             lbl.style.fontSize = (this._size.height * 0.4) + 'px';
             lbl.style.color = ['white', 'yellow'].indexOf(this._colour) >= 0 ? 'black' : 'white';
+            if (this._heading > 180 || this._heading < 0) {
+                // Flip the label if heading left
+                lbl.style.transform = 'rotate(180deg)';
+                lbl.style.textAlign = 'right';
+            }
             this._div.appendChild(lbl);
         }
     } else {
