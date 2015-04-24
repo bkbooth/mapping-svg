@@ -1,7 +1,7 @@
 /**
  * OptionsControl Constructor
  *
- * @param {Object} options
+ * @param {Object}          options
  * @param {HTMLElement}     options.div
  * @param {Function}        options.onChange
  * @param {google.maps.Map} options.map
@@ -129,7 +129,7 @@ OptionsControl.prototype.linkInputToOutput = function(inputElement, outputElemen
  * Returns value in the correct format (Boolean, Number, String)
  *
  * @param {HTMLElement} control
- * @returns {*}
+ * @returns {Boolean|Number|String}
  */
 OptionsControl.prototype.getValue = function(control) {
     return control.type === 'checkbox' ?
