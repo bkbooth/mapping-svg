@@ -1,7 +1,10 @@
+// Global instance of SVGRepository
+var svgRepository = new SVGRepository();
+
 /**
  * SVGOverlay Constructor
  *
- * @param {Object} options
+ * @param {Object}             options
  * @param {String}             options.image
  * @param {String}             options.colour
  * @param {String}             options.label
@@ -23,6 +26,7 @@ function SVGOverlay(options) {
     this._anchor = options.anchor;
     this._map = options.map;
 
+    this._colourSelector = '#car-body';
     this._loaded = false;
     this._div = null;
 
@@ -138,28 +142,80 @@ SVGOverlay.prototype.setSize = function(size) {
 };
 
 /**
- * Set the colour of a specific path
+ * Set the SVG colour of a predefined layer
  *
- * @param {(String|String[])} pathSpecs
- * @param {String}            colour
+ * @param {String} colour
  */
-SVGOverlay.prototype.setColour = function(pathSpecs, colour) {
-    if (!Array.isArray(pathSpecs)) {
-        pathSpecs = [pathSpecs];
-    }
-
+SVGOverlay.prototype.setColour = function(colour) {
     if (!this._div) { return; }
 
-    var obj = this._div.querySelector('object'),
-        svg = obj ? obj.getSVGDocument() : null;
+    if (colour !== this._colour) {
+        this._colour = colour;
+        this.loadImage(function(image) {
+            if (image) {
+                this._div.querySelector('img').src = 'data:image/svg+xml;base64,'+btoa(new XMLSerializer().serializeToString(image));
+            }
+        }.bind(this));
+    }
+};
 
-    pathSpecs.forEach(function(pathSpec) {
-        var path = svg ? svg.querySelector(pathSpec) : null;
+/**
+ * Callback for when image has been loaded
+ *
+ * @callback SVGOverlay~loadImageCallback
+ * @param {XMLDocument} image
+ */
 
+/**
+ * Load an SVG image from file or repository and pass to callback function
+ *
+ * @param {SVGOverlay~loadImageCallback} cb
+ */
+SVGOverlay.prototype.loadImage = function(cb) {
+    var obj, svg, path;
+    if (svgRepository.has(this._image+this._colour)) {
+        // load from repository
+        cb(svgRepository.load(this._image+this._colour));
+    } else if (svgRepository.has(this._image)) {
+        // load, modify and save to repository
+        svg = svgRepository.load(this._image);
+        path = svg ? svg.querySelector(this._colourSelector) : null;
         if (path) {
-            path.style.fill = colour;
+            path.style.fill = this._colour;
+            svgRepository.save(this._image+this._colour, svg);
+            cb(svg);
+        } else {
+            cb(false);
         }
-    }.bind(this));
+    } else {
+        // load and save to repository
+        obj = document.createElement('object');
+        obj.type = 'image/svg+xml';
+        obj.data = this._image;
+        obj.style.zIndex = -1;
+        document.querySelector('body').appendChild(obj);
+
+        google.maps.event.addDomListenerOnce(obj, 'load', function() {
+            svg = obj.getSVGDocument();
+            if (svg) {
+                // save base image
+                svgRepository.save(this._image, svg);
+
+                // colour, save and return image
+                path = svg.querySelector(this._colourSelector);
+                if (path) {
+                    path.style.fill = this._colour;
+                    svgRepository.save(this._image+this._colour, svg);
+                    cb(svg);
+                    document.querySelector('body').removeChild(obj);
+                } else {
+                    cb(false);
+                }
+            } else {
+                cb(false);
+            }
+        }.bind(this));
+    }
 };
 
 /**
@@ -170,26 +226,27 @@ SVGOverlay.prototype.onAdd = function() {
     div.style.position = 'absolute';
     div.style.transform = 'rotate('+(this._heading-90)+'deg)'; // offset rotation so that 0 = North
 
-    var obj = document.createElement('object');
-    obj.type = 'image/svg+xml';
-    obj.data = this._image;
-    obj.className = 'svg-marker';
-    obj.width = this._size.width;
-    obj.height = this._size.height;
-    div.appendChild(obj);
+    this.loadImage(function(image) {
+        var obj = document.createElement('img');
+        obj.src = 'data:image/svg+xml;base64,'+btoa(new XMLSerializer().serializeToString(image));
+        obj.className = 'svg-marker';
+        obj.width = this._size.width;
+        obj.height = this._size.height;
+        div.appendChild(obj);
 
-    this._div = div;
+        this._div = div;
 
-    this.setLabel(this._label);
+        this.setLabel(this._label);
 
-    // Wait until object is loaded before setting colour
-    google.maps.event.addDomListener(obj, 'load', function() {
-        this._loaded = true;
-        this.setColour('#car-body', this._colour);
+        // Set loaded status
+        google.maps.event.addDomListener(obj, 'load', function() {
+            this._loaded = true;
+        }.bind(this));
+
+        // Add to pane
+        var panes = this.getPanes();
+        panes.overlayMouseTarget.appendChild(this._div);
     }.bind(this));
-
-    var panes = this.getPanes();
-    panes.overlayMouseTarget.appendChild(this._div);
 
     /*google.maps.event.addDomListener(this._div, 'click', function() {
         google.maps.event.trigger(this, 'click');
@@ -202,8 +259,7 @@ SVGOverlay.prototype.onAdd = function() {
  */
 SVGOverlay.prototype.draw = function() {
     var point = this.getProjection().fromLatLngToDivPixel(this._position);
-
-    if (point) {
+    if (point && this._div) {
         this._div.style.left = point.x - this._anchor.x + 'px';
         this._div.style.top = point.y - this._anchor.y + 'px';
     }
