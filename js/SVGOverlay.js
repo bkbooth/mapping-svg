@@ -85,13 +85,13 @@ SVGOverlay.prototype.setLabel = function(label) {
             lbl.innerHTML = this._label;
             lbl.className = 'svg-label';
             lbl.style.position = 'absolute';
-            lbl.style.left = '7px';
+            lbl.style.left = Math.floor(this._size.width * 0.15) + 'px'; // 7px at 48px wide
             lbl.style.top = '0';
             lbl.style.width = this._size.width + 'px';
             lbl.style.height = this._size.height + 'px';
             lbl.style.lineHeight = this._size.height + 'px';
             lbl.style.fontFamily = 'Arial,sans-serif';
-            lbl.style.fontSize = (this._size.height * 0.4) + 'px';
+            lbl.style.fontSize = Math.floor(this._size.height * 0.4) + 'px';
             lbl.style.color = ['white', 'yellow'].indexOf(this._colour) >= 0 ? 'black' : 'white';
             if (this._heading > 180 || this._heading < 0) {
                 // Flip the label if heading left
@@ -105,6 +105,32 @@ SVGOverlay.prototype.setLabel = function(label) {
         if (labelDiv) {
             labelDiv.parentNode.removeChild(labelDiv);
             this._label = null;
+        }
+    }
+};
+
+/**
+ * Resize the <object> and label
+ *
+ * @param {google.maps.Size} size
+ */
+SVGOverlay.prototype.setSize = function(size) {
+    if (size && size.width && size.height) {
+        this._size = size;
+
+        var obj = this._div.querySelector('object'),
+            label = this._div.querySelector('.svg-label');
+
+        if (obj) {
+            obj.width = this._size.width;
+            obj.height = this._size.height;
+        }
+        if (label) {
+            label.style.width = this._size.width + 'px';
+            label.style.height = this._size.height + 'px';
+            label.style.lineHeight = this._size.height + 'px';
+            label.style.fontSize = (this._size.height * 0.4) + 'px';
+            label.style.left = Math.floor(this._size.width * 0.15) + 'px';
         }
     }
 };

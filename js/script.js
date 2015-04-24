@@ -74,6 +74,14 @@ function onOptionsChange(id, value) {
                 }
             }
             break;
+        case 'vehicle-image-size':
+            if (value !== imageSize.width) {
+                imageSize = new google.maps.Size(value, value * 0.75);
+                for (i = 0; i < numVehicles; i++) {
+                    vehicleMarkers[i].setSize(imageSize);
+                }
+            }
+            break;
         case 'show-labels':
             if (value !== showLabels) {
                 showLabels = value;

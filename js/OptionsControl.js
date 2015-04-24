@@ -44,6 +44,17 @@ OptionsControl.prototype.init = function() {
                 '</select>' +
             '</div>' +
             '<div class="input-group">' +
+                '<label for="vehicle-image-size">Vehicle Image Size</label>' +
+                '<select id="vehicle-image-size">' +
+                    '<option value="16">Extra Small (16)</option>' +
+                    '<option value="32">Small (32)</option>' +
+                    '<option value="48" selected>Medium (48)</option>' +
+                    '<option value="64">Large (64)</option>' +
+                    '<option value="96">Extra Large (96)</option>' +
+                    '<option value="128">Jumbo (128)</option>' +
+                '</select>' +
+            '</div>' +
+            '<div class="input-group">' +
                 '<label for="show-labels">' +
                     '<input type="checkbox" id="show-labels" value="1" checked> Show Vehicle Labels' +
                 '</label>' +
