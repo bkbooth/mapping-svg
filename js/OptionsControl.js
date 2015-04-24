@@ -80,14 +80,12 @@ OptionsControl.prototype.init = function() {
     this.linkInputToOutput(text.querySelector('#refresh-interval'), text.querySelector('#refresh-interval-output'));
 
     // Setup the onChange listeners
-    google.maps.event.addDomListener(text.querySelector('#num-vehicles'), 'change', this.callOnChange.bind(this));
-    google.maps.event.addDomListener(text.querySelector('#vehicle-image'), 'change', this.callOnChange.bind(this));
-    google.maps.event.addDomListener(text.querySelector('#show-labels'), 'change', this.callOnChange.bind(this));
-    google.maps.event.addDomListener(text.querySelector('#vehicle-speed'), 'change', this.callOnChange.bind(this));
-    google.maps.event.addDomListener(text.querySelector('#refresh-interval'), 'change', this.callOnChange.bind(this));
+    Array.prototype.forEach.call(text.querySelectorAll('input, select'), function(control) {
+        google.maps.event.addDomListener(control, 'change', this.callOnChange.bind(this));
+    }.bind(this));
 
-    // Add the onClick Reset button listener
-    google.maps.event.addDomListener(text.querySelector('#reset-defaults'), 'click', this.resetDefaults.bind(this));
+    // Add the Reset button listener
+    google.maps.event.addDomListener(text.querySelector('form'), 'reset', this.resetDefaults.bind(this));
 
     this._text = text;
 };
@@ -138,10 +136,10 @@ OptionsControl.prototype.callOnChange = function(event) {
  */
 OptionsControl.prototype.resetDefaults = function() {
     if (this._onChange) {
-        var controls = this._div.querySelectorAll('input, select');
-        Array.prototype.forEach.call(controls, function(control) {
-            //console.debug('control', control);
-            this._onChange(control.id, this.getValue(control));
-        }.bind(this));
+        setTimeout(function() {
+            Array.prototype.forEach.call(this._div.querySelectorAll('input, select'), function(control) {
+                this._onChange(control.id, this.getValue(control));
+            }.bind(this));
+        }.bind(this), 0);
     }
 };
