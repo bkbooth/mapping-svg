@@ -124,12 +124,12 @@ SVGOverlay.prototype.setSize = function(size) {
     if (size && size.width && size.height) {
         this._size = size;
 
-        var obj = this._div.querySelector('object'),
+        var img = this._div.querySelector('img'),
             label = this._div.querySelector('.svg-label');
 
-        if (obj) {
-            obj.width = this._size.width;
-            obj.height = this._size.height;
+        if (img) {
+            img.style.width = this._size.width + 'px';
+            img.style.height = this._size.height + 'px';
         }
         if (label) {
             label.style.width = this._size.width + 'px';
@@ -227,12 +227,12 @@ SVGOverlay.prototype.onAdd = function() {
     div.style.transform = 'rotate('+(this._heading-90)+'deg)'; // offset rotation so that 0 = North
 
     this.loadImage(function(image) {
-        var obj = document.createElement('img');
-        obj.src = 'data:image/svg+xml;base64,'+btoa(new XMLSerializer().serializeToString(image));
-        obj.className = 'svg-marker';
-        obj.width = this._size.width;
-        obj.height = this._size.height;
-        div.appendChild(obj);
+        var img = document.createElement('img');
+        img.src = 'data:image/svg+xml;base64,'+btoa(new XMLSerializer().serializeToString(image));
+        img.className = 'svg-marker';
+        img.style.width = this._size.width + 'px';
+        img.style.height = this._size.height + 'px';
+        div.appendChild(img);
 
         this._div = div;
 
