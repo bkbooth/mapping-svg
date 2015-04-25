@@ -273,4 +273,4 @@ function update() {
     }
 }
 
-google.maps.event.addDomListener(window, 'load', init);
+google.maps.event.addDomListenerOnce(window, 'load', init);

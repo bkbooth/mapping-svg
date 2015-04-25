@@ -239,7 +239,7 @@ SVGOverlay.prototype.onAdd = function() {
         this.setLabel(this._label);
 
         // Set loaded status
-        google.maps.event.addDomListener(obj, 'load', function() {
+        google.maps.event.addDomListenerOnce(img, 'load', function() {
             this._loaded = true;
         }.bind(this));
 
