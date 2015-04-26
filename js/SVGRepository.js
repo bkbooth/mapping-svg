@@ -1,10 +1,17 @@
 /**
  * SVGRepository Constructor
  *
+ * @param {Object}  options
+ * @param {Boolean} options.debug
+ *
  * @constructor
  */
-function SVGRepository() {
+function SVGRepository(options) {
+    options = options || {};
+
     this._repo = {};
+
+    this._debug = options.debug || false;
 }
 
 /**
@@ -16,6 +23,8 @@ function SVGRepository() {
  * @returns {XMLDocument|Boolean}
  */
 SVGRepository.prototype.save = function(id, data) {
+    if (this._debug) console.log('SVGRepository.save', id, data);
+
     if (data.toString() === '[object XMLDocument]') {
         return this._repo[id] = data.cloneNode(true);
     } else {
@@ -31,6 +40,8 @@ SVGRepository.prototype.save = function(id, data) {
  * @returns {XMLDocument|Boolean}
  */
 SVGRepository.prototype.load = function(id) {
+    if (this._debug) console.log('SVGRepository.load', id);
+
     return this._repo[id].cloneNode(true) || false;
 };
 
@@ -42,5 +53,7 @@ SVGRepository.prototype.load = function(id) {
  * @returns {Boolean}
  */
 SVGRepository.prototype.has = function(id) {
+    if (this._debug) console.log('SVGRepository.has', id, this._repo.hasOwnProperty(id));
+
     return this._repo.hasOwnProperty(id);
 };
