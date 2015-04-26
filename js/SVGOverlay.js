@@ -172,50 +172,70 @@ SVGOverlay.prototype.setColour = function(colour) {
  * @param {SVGOverlay~loadImageCallback} cb
  */
 SVGOverlay.prototype.loadImage = function(cb) {
-    var obj, svg, path;
+    var image, path;
     if (svgRepository.has(this._image+this._colour)) {
         // load from repository
         cb(svgRepository.load(this._image+this._colour));
     } else if (svgRepository.has(this._image)) {
         // load, modify and save to repository
-        svg = svgRepository.load(this._image);
-        path = svg ? svg.querySelector(this._colourSelector) : null;
+        image = svgRepository.load(this._image);
+        path = image ? image.querySelector(this._colourSelector) : null;
         if (path) {
             path.style.fill = this._colour;
-            svgRepository.save(this._image+this._colour, svg);
-            cb(svg);
+            svgRepository.save(this._image+this._colour, image);
+            cb(image);
         } else {
             cb(false);
         }
     } else {
         // load and save to repository
-        obj = document.createElement('object');
-        obj.type = 'image/svg+xml';
-        obj.data = this._image;
-        obj.style.zIndex = -1;
-        document.querySelector('body').appendChild(obj);
+        this.fetchImage(this._image, function(image) {
+            if (!image) cb(false);
 
-        google.maps.event.addDomListenerOnce(obj, 'load', function() {
-            svg = obj.getSVGDocument();
-            if (svg) {
-                // save base image
-                svgRepository.save(this._image, svg);
+            // save base image
+            svgRepository.save(this._image, image);
 
-                // colour, save and return image
-                path = svg.querySelector(this._colourSelector);
-                if (path) {
-                    path.style.fill = this._colour;
-                    svgRepository.save(this._image+this._colour, svg);
-                    cb(svg);
-                    document.querySelector('body').removeChild(obj);
-                } else {
-                    cb(false);
-                }
+            // colour, save and return image
+            path = image.querySelector(this._colourSelector);
+            if (path) {
+                path.style.fill = this._colour;
+                svgRepository.save(this._image+this._colour, image);
+                cb(image);
             } else {
                 cb(false);
             }
         }.bind(this));
     }
+};
+
+/**
+ * Callback for when image has been fetched
+ *
+ * @callback SVGOverlay~fetchImageCallback
+ * @param {XMLDocument} image
+ */
+
+/**
+ * Fetch an SVG image file using XHR, then pass to callback
+ *
+ * @param {String}                       url
+ * @param {SVGOverlay~fetchImageCallback} cb
+ */
+SVGOverlay.prototype.fetchImage = function(url, cb) {
+    function xhrOnLoad() {
+        var image;
+
+        if (this.readyState === 4 && (image = this.responseXML.querySelector('svg'))) {
+            cb(image);
+        } else {
+            cb(false);
+        }
+    }
+
+    var xhr = new XMLHttpRequest();
+    xhr.addEventListener('load', xhrOnLoad);
+    xhr.open('get', url, true);
+    xhr.send();
 };
 
 /**
@@ -227,6 +247,11 @@ SVGOverlay.prototype.onAdd = function() {
     div.style.transform = 'rotate('+(this._heading-90)+'deg)'; // offset rotation so that 0 = North
 
     this.loadImage(function(image) {
+        if (!image) {
+            console.error('failed loading '+this._image);
+            return;
+        }
+
         var img = document.createElement('img');
         img.src = 'data:image/svg+xml;base64,'+btoa(new XMLSerializer().serializeToString(image));
         img.className = 'svg-marker';
@@ -246,6 +271,9 @@ SVGOverlay.prototype.onAdd = function() {
         // Add to pane
         var panes = this.getPanes();
         panes.overlayMouseTarget.appendChild(this._div);
+
+        // First draw call, shouldn't need to call manually?
+        this.draw();
     }.bind(this));
 
     /*google.maps.event.addDomListener(this._div, 'click', function() {
