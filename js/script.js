@@ -149,6 +149,10 @@ function onOptionsChange(id, value) {
     }
 }
 
+function onVehicleClick() {
+    this.setColour(statuses[Math.floor(Math.random() * statuses.length)]);
+}
+
 function setCentreMarker(map) {
     // Create the marker
     centreMarker = new google.maps.Marker({
@@ -200,6 +204,7 @@ function loadVehicle(map) {
         colour: status,
         label: type,
         anchor: new google.maps.Point(imageSize.width/2, imageSize.height/2),
+        onClick: onVehicleClick,
         map: map
     });
 }

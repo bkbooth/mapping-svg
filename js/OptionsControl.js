@@ -29,6 +29,7 @@ OptionsControl.prototype.init = function() {
     var text = document.createElement('div');
     text.innerHTML =
         '<h1>SVG Demo Options</h1>' +
+        '<p>Click vehicles to change colour</p>' +
         '<form action="#" autocomplete="off">' +
             '<div class="input-group">' +
                 '<label for="num-vehicles">Number of Vehicles</label>' +

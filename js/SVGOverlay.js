@@ -9,6 +9,7 @@ var svgRepository = new SVGRepository();
  * @param {String}             options.colour
  * @param {String}             options.label
  * @param {Number}             options.heading
+ * @param {Function}           options.onClick
  * @param {google.maps.LatLng} options.position
  * @param {google.maps.Size}   options.size
  * @param {google.maps.Point}  options.anchor
@@ -25,6 +26,9 @@ function SVGOverlay(options) {
     this._size = options.size;
     this._anchor = options.anchor;
     this._map = options.map;
+
+    this._onClick = options.onClick;
+    this._clickListener = null;
 
     this._colourSelector = '#car-body';
     this._loaded = false;
@@ -286,14 +290,14 @@ SVGOverlay.prototype.onAdd = function() {
         var panes = this.getPanes();
         panes.overlayMouseTarget.appendChild(this._div);
 
+        // Add click handler
+        if (this._onClick) {
+            this._clickListener = google.maps.event.addDomListener(this._div, 'click', this._onClick.bind(this));
+        }
+
         // First draw call, shouldn't need to call manually?
         this.draw();
     }.bind(this));
-
-    /*google.maps.event.addDomListener(this._div, 'click', function() {
-        google.maps.event.trigger(this, 'click');
-        console.debug('click?', this);
-    }.bind(this));*/
 };
 
 /**
@@ -311,6 +315,9 @@ SVGOverlay.prototype.draw = function() {
  * Called when marker is destroyed
  */
 SVGOverlay.prototype.onRemove = function() {
+    if (this._clickListener) {
+        google.maps.event.removeListener(this._clickListener);
+    }
     if (this._div) {
         this._div.parentNode.removeChild(this._div);
         this._div = null;
