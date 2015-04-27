@@ -148,7 +148,7 @@ OptionsControl.prototype.getValue = function(control) {
  */
 OptionsControl.prototype.callOnChange = function(event) {
     if (this._onChange) {
-        this._onChange(event.srcElement.id, this.getValue(event.srcElement));
+        this._onChange(event.target.id, this.getValue(event.target));
     }
 };
 
