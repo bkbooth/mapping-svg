@@ -12,7 +12,7 @@ var mapObj = null,
     vehicleImageSize = 48,
     showLabels = true,
     refreshInterval = 1000,
-    statuses = ['red', 'yellow', 'orange', 'blue', 'green', 'white', 'black'],
+    statuses = ['red', 'yellow', '#ffa500', '#00bfff', 'green', 'white', '#a020f0'],
     types = ['4M', '7T', 'LU', 'VE', 'AL', 'AV', 'V', 'T', 'L', 'GL', 'GT', 'GV', 'GC', 'GX', 'PC', 'PL', 'MI', 'CV'],
     imageSize = new google.maps.Size(vehicleImageSize, vehicleImageSize * 0.75), // 640x480 base image
     automaticSizing = false
@@ -43,7 +43,7 @@ function zoomLevelChanged() {
     if (automaticSizing) {
         var zoomSize = 4.8 * mapObj.getZoom();
         imageSize = new google.maps.Size(zoomSize, zoomSize * 0.75);
-        for (i = 0; i < numVehicles; i++) {
+        for (var i = 0; i < numVehicles; i++) {
             vehicleMarkers[i].setSize(imageSize);
         }
     }
