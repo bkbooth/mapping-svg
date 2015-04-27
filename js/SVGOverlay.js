@@ -17,7 +17,6 @@ if (is_chrome && is_safari) is_safari = false; // Chrome has both 'Chrome' and '
  * @param {Function}           options.onClick
  * @param {google.maps.LatLng} options.position
  * @param {google.maps.Size}   options.size
- * @param {google.maps.Point}  options.anchor
  * @param {google.maps.Map}    options.map
  *
  * @constructor
@@ -29,7 +28,7 @@ function SVGOverlay(options) {
     this._colour = options.colour;
     this._label = options.label;
     this._size = options.size;
-    this._anchor = options.anchor;
+    this._anchor = new google.maps.Point(this._size.width/2, this._size.height/2);
     this._map = options.map;
 
     this._onClick = options.onClick;
@@ -132,6 +131,7 @@ SVGOverlay.prototype.setSize = function(size) {
 
     if (size && size.width && size.height) {
         this._size = size;
+        this._anchor = new google.maps.Point(this._size.width/2, this._size.height/2);
 
         var img = this._div.querySelector('img'),
             label = this._div.querySelector('.svg-label');
@@ -147,6 +147,9 @@ SVGOverlay.prototype.setSize = function(size) {
             label.style.fontSize = (this._size.height * 0.4) + 'px';
             label.style.left = Math.floor(this._size.width * 0.15) + 'px';
         }
+
+        // Force redraw
+        this.draw();
     }
 };
 

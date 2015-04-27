@@ -203,7 +203,6 @@ function loadVehicle(map) {
         size: imageSize,
         colour: status,
         label: type,
-        anchor: new google.maps.Point(imageSize.width/2, imageSize.height/2),
         onClick: onVehicleClick,
         map: map
     });
