@@ -237,10 +237,14 @@ SVGOverlay.prototype.loadImage = function(cb) {
  */
 SVGOverlay.prototype.fetchImage = function(url, cb) {
     function xhrOnLoad() {
-        var image;
-
-        if (this.readyState === 4 && (image = this.responseXML.querySelector('svg'))) {
-            cb(image);
+        if (this.readyState === 4) {
+            if (Utils.isExplorer()) {
+                var temp = document.createElement('div');
+                temp.innerHTML = this.responseText;
+                cb(temp.querySelector('svg'));
+            } else {
+                cb(this.responseXML.querySelector('svg'));
+            }
         } else {
             cb(false);
         }

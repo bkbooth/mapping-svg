@@ -22,5 +22,14 @@ var Utils = {
     isSafari: function() {
         return navigator.userAgent.indexOf('Safari') > -1 &&
             navigator.userAgent.indexOf('Chrome') === -1;
+    },
+
+    /**
+     * Check if browser is Internet Explorer
+     *
+     * @returns {Boolean}
+     */
+    isExplorer: function() {
+        return navigator.userAgent.indexOf('MSIE') > -1;
     }
 };
