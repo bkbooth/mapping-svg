@@ -18,14 +18,14 @@ function SVGRepository(options) {
  * Save an SVG to the repository
  *
  * @param {String} id
- * @param {XMLDocument} data
+ * @param {SVGSVGElement} data
  *
- * @returns {XMLDocument|Boolean}
+ * @returns {SVGSVGElement|Boolean}
  */
 SVGRepository.prototype.save = function(id, data) {
-    if (this._debug) console.log('SVGRepository.save', id, data);
+    if (this._debug) console.log('SVGRepository.save', id, data, data.toString());
 
-    if (data.toString() === '[object XMLDocument]') {
+    if (data instanceof SVGSVGElement) {
         return this._repo[id] = data.cloneNode(true);
     } else {
         return false;
@@ -37,7 +37,7 @@ SVGRepository.prototype.save = function(id, data) {
  *
  * @param {String} id
  *
- * @returns {XMLDocument|Boolean}
+ * @returns {SVGSVGElement|Boolean}
  */
 SVGRepository.prototype.load = function(id) {
     if (this._debug) console.log('SVGRepository.load', id);
