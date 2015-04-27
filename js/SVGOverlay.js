@@ -99,7 +99,7 @@ SVGOverlay.prototype.setLabel = function(label) {
             lbl.style.color = 'black';
             if (this._heading > 180 || this._heading < 0) {
                 // Flip the label if heading left
-                lbl.style.transform = 'rotate(180deg)';
+                this.setTransform(lbl, 'rotate(180deg)');
                 lbl.style.textAlign = 'right';
             }
             this._div.appendChild(lbl);
@@ -239,12 +239,26 @@ SVGOverlay.prototype.fetchImage = function(url, cb) {
 };
 
 /**
+ * Add cross-browser transformation to element
+ *
+ * @param {HTMLElement} element
+ * @param {String}      transformation
+ */
+SVGOverlay.prototype.setTransform = function(element, transformation) {
+    element.style.webkitTransform = transformation;
+    element.style.MozTransform = transformation;
+    element.style.msTransform = transformation;
+    element.style.OTransform = transformation;
+    element.style.transform = transformation;
+};
+
+/**
  * Called when marker is created
  */
 SVGOverlay.prototype.onAdd = function() {
     var div = document.createElement('div');
     div.style.position = 'absolute';
-    div.style.transform = 'rotate('+(this._heading-90)+'deg)'; // offset rotation so that 0 = North
+    this.setTransform(div, 'rotate('+(this._heading-90)+'deg)'); // offset rotation so that 0 = North
 
     this.loadImage(function(image) {
         if (!image) {
