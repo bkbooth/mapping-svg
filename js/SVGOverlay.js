@@ -1,6 +1,11 @@
 // Global instance of SVGRepository
 var svgRepository = new SVGRepository();
 
+// Safari browser detection
+var is_chrome = navigator.userAgent.indexOf('Chrome') > -1,
+    is_safari =navigator.userAgent.indexOf('Safari') > -1;
+if (is_chrome && is_safari) is_safari = false; // Chrome has both 'Chrome' and 'Safari' in UA string
+
 /**
  * SVGOverlay Constructor
  *
@@ -158,6 +163,13 @@ SVGOverlay.prototype.setColour = function(colour) {
         this.loadImage(function(image) {
             if (image) {
                 this._div.querySelector('img').src = 'data:image/svg+xml;base64,'+btoa(new XMLSerializer().serializeToString(image));
+
+                // Force redraw to fix Safari tiny SVG when changing <img> src bug
+                // http://stackoverflow.com/questions/29235677/solution-to-svg-render-bug-in-safari
+                if (is_safari) {
+                    this.setMap(null);
+                    this.setMap(this._map);
+                }
             }
         }.bind(this));
     }
