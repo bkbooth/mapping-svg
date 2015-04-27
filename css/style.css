@@ -8,11 +8,32 @@ html, body, #map-canvas {
     width: 200px;
     padding: 5px 10px;
     margin: 10px;
+    position: relative;
 
     background: white;
 
     border-radius: 5px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+.svg-options-control #toggleControl {
+    display: block;
+    width: 16px;
+    height: 16px;
+    line-height: 17px;
+    border-radius: 8px;
+
+    position: absolute;
+    top: 10px;
+    right: 10px;
+
+    background: black;
+    color: white;
+
+    text-align: center;
+    text-decoration: none;
+}
+.svg-options-control #toggleControl:hover {
+    background: #333;
 }
 .svg-options-control h1 {
     font-size: 20px;

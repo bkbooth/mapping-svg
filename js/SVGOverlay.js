@@ -1,11 +1,6 @@
 // Global instance of SVGRepository
 var svgRepository = new SVGRepository();
 
-// Safari browser detection
-var is_chrome = navigator.userAgent.indexOf('Chrome') > -1,
-    is_safari =navigator.userAgent.indexOf('Safari') > -1;
-if (is_chrome && is_safari) is_safari = false; // Chrome has both 'Chrome' and 'Safari' in UA string
-
 /**
  * SVGOverlay Constructor
  *
@@ -107,7 +102,7 @@ SVGOverlay.prototype.setLabel = function(label) {
             lbl.style.color = 'black';
             if (this._heading > 180 || this._heading < 0) {
                 // Flip the label if heading left
-                this.setTransform(lbl, 'rotate(180deg)');
+                Utils.setTransform(lbl, 'rotate(180deg)');
                 lbl.style.textAlign = 'right';
             }
             this._div.appendChild(lbl);
@@ -169,7 +164,7 @@ SVGOverlay.prototype.setColour = function(colour) {
 
                 // Force redraw to fix Safari tiny SVG when changing <img> src bug
                 // http://stackoverflow.com/questions/29235677/solution-to-svg-render-bug-in-safari
-                if (is_safari) {
+                if (Utils.isSafari()) {
                     this.setMap(null);
                     this.setMap(this._map);
                 }
@@ -258,26 +253,12 @@ SVGOverlay.prototype.fetchImage = function(url, cb) {
 };
 
 /**
- * Add cross-browser transformation to element
- *
- * @param {HTMLElement} element
- * @param {String}      transformation
- */
-SVGOverlay.prototype.setTransform = function(element, transformation) {
-    element.style.webkitTransform = transformation;
-    element.style.MozTransform = transformation;
-    element.style.msTransform = transformation;
-    element.style.OTransform = transformation;
-    element.style.transform = transformation;
-};
-
-/**
  * Called when marker is created
  */
 SVGOverlay.prototype.onAdd = function() {
     var div = document.createElement('div');
     div.style.position = 'absolute';
-    this.setTransform(div, 'rotate('+(this._heading-90)+'deg)'); // offset rotation so that 0 = North
+    Utils.setTransform(div, 'rotate('+(this._heading-90)+'deg)'); // offset rotation so that 0 = North
 
     this.loadImage(function(image) {
         if (!image) {

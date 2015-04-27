@@ -14,6 +14,7 @@ function OptionsControl(options) {
 
     this._div = options.div;
     this._text = null;
+    this._visible = true;
 
     this.init();
 }
@@ -28,7 +29,8 @@ OptionsControl.prototype.init = function() {
 
     var text = document.createElement('div');
     text.innerHTML =
-        '<h1>SVG Demo Options</h1>' +
+        '<a id="toggleControl" href>&#x25BE;</a>' +
+        '<h1>SVG Map Demo</h1>' +
         '<p>Click vehicles to change colour</p>' +
         '<form action="#" autocomplete="off">' +
             '<div class="input-group">' +
@@ -109,6 +111,9 @@ OptionsControl.prototype.init = function() {
     // Add the Reset button listener
     google.maps.event.addDomListener(text.querySelector('form'), 'reset', this.resetDefaults.bind(this));
 
+    // Add the toggle link listener
+    google.maps.event.addDomListener(text.querySelector('#toggleControl'), 'click', this.toggleControl.bind(this));
+
     this._text = text;
 };
 
@@ -167,4 +172,17 @@ OptionsControl.prototype.resetDefaults = function() {
             }.bind(this));
         }
     }.bind(this), 0);
+};
+
+/**
+ * Toggle form visibility
+ *
+ * @param {Event} event
+ */
+OptionsControl.prototype.toggleControl = function(event) {
+    event.preventDefault();
+
+    this._visible = !this._visible;
+    this._text.querySelector('form').style.display = this._visible ? 'block' : 'none';
+    Utils.setTransform(this._text.querySelector('#toggleControl'), this._visible ? 'none' : 'rotate(180deg)');
 };
